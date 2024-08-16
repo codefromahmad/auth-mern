@@ -1,10 +1,16 @@
 import express from "express";
 import createHttpError from "http-errors";
 import dotenv from "dotenv";
+import AuthRoute from "./Routes/Auth.route.js";
+
+// const AuthRoute = require("./Routes/Auth.route");
+
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+app.use("/auth", AuthRoute);
 
 app.get("/", (req, res, next) => {
   res.send("Hello World");
