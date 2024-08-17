@@ -1,5 +1,6 @@
 import express from "express";
 import createHttpError from "http-errors";
+import morgan from "morgan";
 import dotenv from "dotenv";
 import AuthRoute from "./Routes/Auth.route.js";
 
@@ -10,6 +11,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(morgan("dev"));
 app.use("/auth", AuthRoute);
 
 app.get("/", (req, res, next) => {
