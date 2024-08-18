@@ -1,11 +1,12 @@
 import jwt from "jsonwebtoken";
 import createHttpError from "http-errors";
-import e from "express";
+import dotenv from "dotenv";
 
+dotenv.config();
 const signAccessToken = (userId) => {
   return new Promise((resolve, reject) => {
     const payload = {};
-    const secret = "some super secret";
+    const secret = process.env.ACCESS_TOKEN_SECRET;
     const options = {
       expiresIn: "1h",
       issuer: "authmern.com",
