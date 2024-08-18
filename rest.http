@@ -5,6 +5,12 @@ POST http://localhost:3000/auth/login
 
 ### Register route
 POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+    "email": "admin@auth.com",
+    "password": "12345"
+}
 
 ### Refresh token route
 POST http://localhost:3000/auth/refresh-token
