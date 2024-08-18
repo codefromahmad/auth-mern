@@ -3,8 +3,7 @@ import createHttpError from "http-errors";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import AuthRoute from "./Routes/Auth.route.js";
-
-// const AuthRoute = require("./Routes/Auth.route");
+import "./helpers/init_mongodb.js";
 
 dotenv.config();
 
