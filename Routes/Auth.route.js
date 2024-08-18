@@ -11,7 +11,6 @@ router.post("/register", async (req, res, next) => {
     const { email, password } = req.body;
     // if (!email || !password) throw createHttpError.BadRequest();
     const result = await authSchema.validateAsync(req.body);
-    console.log(result);
 
     const doesUserExist = await User.findOne({ email: result.email });
     if (doesUserExist)
