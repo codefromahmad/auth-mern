@@ -2,13 +2,14 @@ import express from "express";
 import createHttpError from "http-errors";
 import User from "../models/User.model.js";
 import { authSchema } from "../helpers/validation_schema.js";
+import { signAccessToken } from "../helpers/jwt_helper.js";
 
 const router = express.Router();
 
 router.post("/register", async (req, res, next) => {
   console.log(req.body);
   try {
-    const { email, password } = req.body;
+    // const { email, password } = req.body;
     // if (!email || !password) throw createHttpError.BadRequest();
     const result = await authSchema.validateAsync(req.body);
 
@@ -20,8 +21,9 @@ router.post("/register", async (req, res, next) => {
 
     const user = new User(result);
     const savedUser = await user.save();
+    const accessToken = await signAccessToken(savedUser.id);
 
-    res.send(savedUser);
+    res.send({ accessToken });
   } catch (error) {
     if (error.isJoi === true) error.status = 422;
 
