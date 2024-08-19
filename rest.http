@@ -24,6 +24,11 @@ Content-Type: application/json
 
 ### Refresh token route
 POST http://localhost:3000/auth/refresh-token
+Content-Type: application/json
+
+{
+    "refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MjQwNjUzMDEsImV4cCI6MTc1NTYyMjkwMSwiYXVkIjoiNjZjMjgxZGE0YTAzNWMzYjc4ZDQ5ZDgyIiwiaXNzIjoiYXV0aG1lcm4uY29tIn0.Oy_uhh6X7Dj5wFStideqpI16FYhQUwwW3u-TMa8jHFs" 
+}
 
 ### Logout route
 DELETE http://localhost:3000/auth/logout

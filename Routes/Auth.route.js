@@ -2,7 +2,11 @@ import express from "express";
 import createHttpError from "http-errors";
 import User from "../models/User.model.js";
 import { authSchema } from "../helpers/validation_schema.js";
-import { signAccessToken, signRefreshToken } from "../helpers/jwt_helper.js";
+import {
+  signAccessToken,
+  signRefreshToken,
+  verifyRefreshToken,
+} from "../helpers/jwt_helper.js";
 
 const router = express.Router();
 
@@ -54,7 +58,17 @@ router.post("/login", async (req, res, next) => {
 });
 
 router.post("/refresh-token", async (req, res, next) => {
-  res.send("Refresh token route");
+  try {
+    const { refreshToken } = req.body;
+    if (!refreshToken) throw createHttpError.BadRequest();
+    const userId = await verifyRefreshToken(refreshToken);
+
+    const accessToken = await signAccessToken(userId);
+    const refToken = await signRefreshToken(userId);
+    res.send({ accessToken: accessToken, refreshToken: refToken });
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.delete("/logout", async (req, res, next) => {

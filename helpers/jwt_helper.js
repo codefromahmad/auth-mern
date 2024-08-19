@@ -62,4 +62,24 @@ const verifyAccessToken = async (req, res, next) => {
   } catch (error) {}
 };
 
-export { signAccessToken, signRefreshToken, verifyAccessToken };
+const verifyRefreshToken = (refreshToken) => {
+  return new Promise((resolve, reject) => {
+    jwt.verify(
+      refreshToken,
+      process.env.REFRESH_TOKEN_SECRET,
+      (err, payload) => {
+        if (err) return reject(createHttpError.BadRequest());
+        const userId = payload.aud;
+
+        resolve(userId);
+      }
+    );
+  });
+};
+
+export {
+  signAccessToken,
+  signRefreshToken,
+  verifyAccessToken,
+  verifyRefreshToken,
+};
