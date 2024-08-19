@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import createHttpError from "http-errors";
 import dotenv from "dotenv";
+import client from "./init_redis.js";
 
 dotenv.config();
 const signAccessToken = (userId) => {
@@ -27,7 +28,7 @@ const signRefreshToken = (userId) => {
     const payload = {};
     const secret = process.env.REFRESH_TOKEN_SECRET;
     const options = {
-      expiresIn: "1y",
+      expiresIn: "30s",
       issuer: "authmern.com",
       audience: userId,
     };
@@ -36,7 +37,14 @@ const signRefreshToken = (userId) => {
       if (err) {
         reject(createHttpError.InternalServerError());
       }
-      resolve(token);
+      client.SET(userId, token, "EX", 30, (err, reply) => {
+        if (err) {
+          console.log(err.message);
+          reject(createHttpError.InternalServerError());
+          return;
+        }
+        resolve(token);
+      });
     });
   });
 };
@@ -68,10 +76,17 @@ const verifyRefreshToken = (refreshToken) => {
       refreshToken,
       process.env.REFRESH_TOKEN_SECRET,
       (err, payload) => {
-        if (err) return reject(createHttpError.BadRequest());
+        if (err) return reject(createHttpError.Unauthorized());
         const userId = payload.aud;
-
-        resolve(userId);
+        client.GET(userId, (err, result) => {
+          if (err) {
+            console.log(err.message);
+            reject(createHttpError.InternalServerError());
+            return;
+          }
+          if (refreshToken === result) return resolve(userId);
+          reject(createHttpError.Unauthorized());
+        });
       }
     );
   });

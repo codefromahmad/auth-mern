@@ -3,17 +3,10 @@ import createHttpError from "http-errors";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import AuthRoute from "./Routes/Auth.route.js";
-import client from "./helpers/init_redis.js";
 import "./helpers/init_mongodb.js";
 import { verifyAccessToken } from "./helpers/jwt_helper.js";
 
 dotenv.config();
-await client.SET("foo", "afaq");
-
-client.GET("foo", (err, value) => {
-  if (err) console.log(err.message);
-  console.log(value);
-});
 
 const app = express();
 app.use(express.json());
