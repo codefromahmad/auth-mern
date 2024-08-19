@@ -2,15 +2,13 @@ import express from "express";
 import createHttpError from "http-errors";
 import User from "../models/User.model.js";
 import { authSchema } from "../helpers/validation_schema.js";
-import { signAccessToken } from "../helpers/jwt_helper.js";
+import { signAccessToken, signRefreshToken } from "../helpers/jwt_helper.js";
 
 const router = express.Router();
 
 router.post("/register", async (req, res, next) => {
   console.log(req.body);
   try {
-    // const { email, password } = req.body;
-    // if (!email || !password) throw createHttpError.BadRequest();
     const result = await authSchema.validateAsync(req.body);
 
     const doesUserExist = await User.findOne({ email: result.email });
@@ -22,8 +20,9 @@ router.post("/register", async (req, res, next) => {
     const user = new User(result);
     const savedUser = await user.save();
     const accessToken = await signAccessToken(savedUser.id);
+    const refreshToken = await signRefreshToken(savedUser.id);
 
-    res.send({ accessToken });
+    res.send({ accessToken, refreshToken });
   } catch (error) {
     if (error.isJoi === true) error.status = 422;
 
@@ -44,8 +43,9 @@ router.post("/login", async (req, res, next) => {
       throw createHttpError.Unauthorized("Invalid Username/Password");
 
     const accessToken = await signAccessToken(user.id);
+    const refreshToken = await signRefreshToken(user.id);
 
-    res.send({ accessToken });
+    res.send({ accessToken, refreshToken });
   } catch (error) {
     if (error.isJoi === true)
       return next(createHttpError.BadRequest("Invalid Username/Password"));
