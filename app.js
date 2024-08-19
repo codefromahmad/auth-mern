@@ -4,6 +4,7 @@ import morgan from "morgan";
 import dotenv from "dotenv";
 import AuthRoute from "./Routes/Auth.route.js";
 import "./helpers/init_mongodb.js";
+import { verifyAccessToken } from "./helpers/jwt_helper.js";
 
 dotenv.config();
 
@@ -15,7 +16,7 @@ const PORT = process.env.PORT || 3000;
 app.use(morgan("dev"));
 app.use("/auth", AuthRoute);
 
-app.get("/", (req, res, next) => {
+app.get("/", verifyAccessToken, (req, res, next) => {
   res.send("Hello World");
 });
 

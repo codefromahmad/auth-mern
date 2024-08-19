@@ -8,7 +8,7 @@ const signAccessToken = (userId) => {
     const payload = {};
     const secret = process.env.ACCESS_TOKEN_SECRET;
     const options = {
-      expiresIn: "1h",
+      expiresIn: "15s",
       issuer: "authmern.com",
       audience: userId,
     };
@@ -22,4 +22,20 @@ const signAccessToken = (userId) => {
   });
 };
 
-export { signAccessToken };
+const verifyAccessToken = async (req, res, next) => {
+  try {
+    if (!req.headers["authorization"])
+      return next(createHttpError.Unauthorized());
+
+    const authHeader = req.headers["authorization"];
+    const bearerToken = authHeader.split(" ");
+    const token = bearerToken[1];
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, payload) => {
+      if (err) return next(createHttpError.Unauthorized());
+      req.payload = payload;
+      next();
+    });
+  } catch (error) {}
+};
+
+export { signAccessToken, verifyAccessToken };
