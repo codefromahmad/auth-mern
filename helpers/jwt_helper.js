@@ -31,7 +31,12 @@ const verifyAccessToken = async (req, res, next) => {
     const bearerToken = authHeader.split(" ");
     const token = bearerToken[1];
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, payload) => {
-      if (err) return next(createHttpError.Unauthorized());
+      if (err) {
+        const message =
+          err.name === "JsonWebTokenError" ? "Unauthorized" : err.message;
+
+        return next(createHttpError.Unauthorized(message));
+      }
       req.payload = payload;
       next();
     });
