@@ -7,6 +7,7 @@ import {
   signRefreshToken,
   verifyRefreshToken,
 } from "../helpers/jwt_helper.js";
+import client from "../helpers/init_redis.js";
 
 const router = express.Router();
 
@@ -72,7 +73,20 @@ router.post("/refresh-token", async (req, res, next) => {
 });
 
 router.delete("/logout", async (req, res, next) => {
-  res.send("Logout route");
+  try {
+    const { refreshToken } = req.body;
+    const userId = await verifyRefreshToken(refreshToken);
+    client.DEL(userId, (err, val) => {
+      if (err) {
+        console.log(err.message);
+        throw createHttpError.InternalServerError();
+      }
+      console.log(val);
+      res.sendStatus(204);
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 export default router;

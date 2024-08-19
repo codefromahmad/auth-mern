@@ -9,7 +9,7 @@ const signAccessToken = (userId) => {
     const payload = {};
     const secret = process.env.ACCESS_TOKEN_SECRET;
     const options = {
-      expiresIn: "15s",
+      expiresIn: "30s",
       issuer: "authmern.com",
       audience: userId,
     };
@@ -28,7 +28,7 @@ const signRefreshToken = (userId) => {
     const payload = {};
     const secret = process.env.REFRESH_TOKEN_SECRET;
     const options = {
-      expiresIn: "30s",
+      expiresIn: "1y",
       issuer: "authmern.com",
       audience: userId,
     };
@@ -37,7 +37,7 @@ const signRefreshToken = (userId) => {
       if (err) {
         reject(createHttpError.InternalServerError());
       }
-      client.SET(userId, token, "EX", 30, (err, reply) => {
+      client.SET(userId, token, "EX", 365 * 24 * 60 * 60, (err, reply) => {
         if (err) {
           console.log(err.message);
           reject(createHttpError.InternalServerError());
